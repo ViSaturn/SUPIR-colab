@@ -9,10 +9,13 @@ from llava.model.builder import load_pretrained_model
 from llava.utils import disable_torch_init
 from llava.mm_utils import tokenizer_image_token, get_model_name_from_path, KeywordsStoppingCriteria
 
-from PIL import Image
+from PIL import Image, ImageFile
 import math
 import time
 import glob as gb
+
+# Enable loading of truncated images automatically
+ImageFile.LOAD_TRUNCATED_IMAGES = True
 
 
 class LLavaAgent:
@@ -31,6 +34,8 @@ class LLavaAgent:
         self.image_processor = image_processor
         self.tokenizer = tokenizer
         self.context_len = context_len
+        self.load_8bit = load_8bit
+        self.load_4bit = load_4bit
         self.qs = 'Describe this image and its style in a very detailed manner.'
         self.conv_mode = conv_mode
 
@@ -100,6 +105,16 @@ class LLavaAgent:
             output = output.strip().replace('\n', ' ').replace('\r', ' ')
             img_captions.append(output)
         return img_captions
+
+    def to(self, device):
+        if self.load_8bit or self.load_4bit:
+            return self
+        if self.load_4bit:
+            return self
+        self.device = device
+        self.model.to(device)
+        self.input_ids = self.input_ids.to(device)
+        return self
 
 
 if __name__ == '__main__':

@@ -2,7 +2,7 @@ import torch
 import torch.nn as nn
 
 from transformers import CLIPVisionModel, CLIPImageProcessor, CLIPVisionConfig
-from CKPT_PTH import LLAVA_CLIP_PATH
+from SUPIR.utils.model_fetch import get_model
 
 
 class CLIPVisionTower(nn.Module):
@@ -10,24 +10,23 @@ class CLIPVisionTower(nn.Module):
         super().__init__()
 
         self.is_loaded = False
-
+        self.image_processor = None
+        self.vision_tower = None
         self.vision_tower_name = vision_tower
         print(f'Loading vision tower: {self.vision_tower_name}')
         self.select_layer = args.mm_vision_select_layer
         self.select_feature = getattr(args, 'mm_vision_select_feature', 'patch')
-
+        llava_path = get_model("openai/clip-vit-large-patch14-336")
         if not delay_load:
             self.load_model()
         else:
             # self.cfg_only = CLIPVisionConfig.from_pretrained(self.vision_tower_name)
-            self.cfg_only = CLIPVisionConfig.from_pretrained(
-                self.vision_tower_name if LLAVA_CLIP_PATH is None else LLAVA_CLIP_PATH)
+            self.cfg_only = CLIPVisionConfig.from_pretrained(llava_path)
 
     def load_model(self):
-        self.image_processor = CLIPImageProcessor.from_pretrained(
-            self.vision_tower_name if LLAVA_CLIP_PATH is None else LLAVA_CLIP_PATH)
-        self.vision_tower = CLIPVisionModel.from_pretrained(
-            self.vision_tower_name if LLAVA_CLIP_PATH is None else LLAVA_CLIP_PATH)
+        llava_path = get_model("openai/clip-vit-large-patch14-336")
+        self.image_processor = CLIPImageProcessor.from_pretrained(llava_path)
+        self.vision_tower = CLIPVisionModel.from_pretrained(llava_path)
         self.vision_tower.requires_grad_(False)
 
         self.is_loaded = True
