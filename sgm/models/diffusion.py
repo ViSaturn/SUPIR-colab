@@ -53,6 +53,7 @@ class DiffusionEngine(pl.LightningModule):
         )
 
         self.denoiser = instantiate_from_config(denoiser_config)
+        print(f"DEBUG: sampler_config received in DiffusionEngine: {sampler_config}")
         self.sampler = (
             instantiate_from_config(sampler_config)
             if sampler_config is not None

@@ -15,7 +15,7 @@ from ui_helpers import printt
 
 class SUPIRModel(DiffusionEngine):
     def __init__(self, control_stage_config, ae_dtype='bf16', diffusion_dtype='bf16', p_p='', n_p='', *args, **kwargs):
-        super().__init__(*args, **kwargs)
+        super().__init__(*args, sampler_config=kwargs.pop('sampler_config', None), **kwargs)
         printt("Loading control model.")
         control_model = instantiate_from_config(control_stage_config)
         printt("Instantiated control model.")
