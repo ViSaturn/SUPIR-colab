@@ -61,7 +61,7 @@ use_llava = not args.no_llava
 # load SUPIR
 model_cfg = "options/SUPIR_v0_tiled.yaml" if args.use_tile_vae else "options/SUPIR_v0.yaml"
 model = create_SUPIR_model(model_cfg, weight_dtype=args.weight_dtype, supir_sign=args.SUPIR_sign, 
-                          device=SUPIR_device, sampler=args.sampler)
+                          device=SUPIR_device)
 
 if args.use_tile_vae:
     model.init_tile_vae(encoder_tile_size=args.encoder_tile_size, decoder_tile_size=args.decoder_tile_size)
